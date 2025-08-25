@@ -1,19 +1,18 @@
 <?php
-
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\MenuController;
+use App\Http\Controllers\OrderController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
-|
-*/
-
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::post('/customer/register', [AuthController::class, 'register']);
+Route::post('/customer/login', [AuthController::class, 'login']);
+Route::get('/customer/menu', [MenuController::class, 'index']);
+Route::middleware('auth:sanctum')->prefix('customer')->group(function () {
+    Route::post('/checkout', [OrderController::class, 'checkout']);
+});
+Route::post('/admin/login', [AuthController::class, 'adminLogin']);
+Route::middleware(['auth:sanctum', 'ability:admin'])->prefix('admin')->group(function () {
+    Route::apiResource('menus', MenuController::class);
+    Route::get('/orders', [OrderController::class, 'index']);
+    Route::put('/orders/{order}/status', [OrderController::class, 'updateStatus']);
 });
