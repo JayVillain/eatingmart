@@ -1,48 +1,49 @@
 <?php
-
 namespace App\Http\Controllers;
-
+use App\Models\Order;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Str;
 class OrderController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    public function checkout(Request $request)
+    {
+        $request->validate([
+            'items' => 'required|array',
+            'items.*.menu_id' => 'required|exists:menus,id',
+            'items.*.quantity' => 'required|integer|min:1',
+        ]);
+        $user = auth()->user();
+        $virtualAccount = 'VA' . Str::random(10) . rand(1000, 9999);
+        $totalPrice = 0;
+        foreach ($request->items as $item) {
+            $menu = \App\Models\Menu::find($item['menu_id']);
+            $totalPrice += $menu->price * $item['quantity'];
+        }
+        $order = $user->orders()->create([
+            'total_price' => $totalPrice,
+            'status' => 'pending_payment',
+            'virtual_account_number' => $virtualAccount,
+        ]);
+        foreach ($request->items as $item) {
+            $menu = \App\Models\Menu::find($item['menu_id']);
+            $order->items()->create([
+                'menu_id' => $menu->id,
+                'quantity' => $item['quantity'],
+                'price' => $menu->price,
+            ]);
+        }
+        return response()->json(['message' => 'Pesanan berhasil dibuat. Menunggu pembayaran.', 'order' => $order], 201);
+    }
     public function index()
     {
-        //
+        $orders = Order::with('user', 'items.menu')->latest()->get();
+        return response()->json($orders);
     }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function updateStatus(Request $request, Order $order)
     {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        $request->validate(['status' => 'required|in:paid,completed,cancelled']);
+        $order->status = $request->status;
+        $order->save();
+        return response()->json(['message' => 'Status pesanan berhasil diperbarui.', 'order' => $order]);
     }
 }
