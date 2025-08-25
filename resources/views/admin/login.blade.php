@@ -6,14 +6,14 @@
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
 
         :root {
-            --bg-color: #f0f2f5; /* Latar belakang abu-abu terang */
-            --card-bg: #ffffff; /* Latar belakang kartu putih */
-            --text-color: #333333; /* Warna teks utama gelap */
-            --input-bg: #f5f5f5; /* Latar belakang input abu-abu sangat terang */
-            --input-border: #dddddd; /* Warna border input */
+            --bg-color: #f0f2f5;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --input-bg: #f5f5f5;
+            --input-border: #dddddd;
             --placeholder-color: #999;
-            --accent-color: #007bff; /* Warna aksen biru, umum untuk profesional */
-            --error-color: #dc3545; /* Merah untuk pesan error */
+            --accent-color: #dc3545; /* Merah untuk warna aksen */
+            --error-color: #dc3545;
             --font-family: 'Roboto', sans-serif;
             --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
@@ -81,7 +81,7 @@
         .form-control:focus {
             border-color: var(--accent-color);
             outline: none;
-            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+            box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.25); /* Merah */
         }
 
         .error-message {
@@ -109,7 +109,7 @@
         }
 
         .btn-submit:hover {
-            background-color: #0056b3;
+            background-color: #b02a37; /* Merah yang sedikit lebih gelap */
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
