@@ -17,7 +17,7 @@ class MenuFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->word() . ' ' . fake()->foodName(),
+            'name' => fake()->randomElement(['Nasi Goreng', 'Mie Ayam', 'Bakso', 'Ayam Bakar', 'Sate Padang']) . ' ' . fake()->word(),
             'description' => fake()->sentence(8),
             'price' => fake()->randomFloat(2, 5000, 100000),
             'image_url' => 'https://via.placeholder.com/300x200.png?text=' . str_replace(' ', '+', fake()->word()),
