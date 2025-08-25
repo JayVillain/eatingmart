@@ -1,50 +1,40 @@
 <?php
-namespace App\Http\Controllers;
-use App\Models\User;
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Auth;
+
 class AuthController extends Controller
 {
-    public function register(Request $request)
+    public function showLoginForm()
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|unique:users,email',
-            'password' => 'required|string|min:8|confirmed',
-        ]);
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role' => 'customer',
-        ]);
-        $token = $user->createToken('customer_token')->plainTextToken;
-        return response()->json(['user' => $user, 'token' => $token], 201);
+        return view('admin.login');
     }
+
     public function login(Request $request)
     {
-        $request->validate([
-            'email' => 'required|string|email',
-            'password' => 'required|string',
-        ]);
-        $user = User::where('email', $request->email)->first();
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            throw ValidationException::withMessages([
-                'email' => ['Kredensial yang diberikan tidak cocok dengan catatan kami.'],
-            ]);
+        $credentials = $request->only('email', 'password');
+
+        if (Auth::attempt($credentials)) {
+            $user = Auth::user();
+            if ($user->role === 'admin') {
+                $request->session()->regenerate();
+                return redirect()->intended(route('admin.dashboard'));
+            }
+
+            Auth::logout();
         }
-        $token = $user->createToken('customer_token')->plainTextToken;
-        return response()->json(['user' => $user, 'token' => $token]);
+
+        return back()->withErrors(['email' => 'Kredensial tidak valid.']);
     }
-    public function adminLogin(Request $request)
+
+    public function logout(Request $request)
     {
-        $request->validate(['email' => 'required|string|email', 'password' => 'required|string']);
-        $user = User::where('email', $request->email)->first();
-        if (!$user || !Hash::check($request->password, $user->password) || $user->role !== 'admin') {
-            throw ValidationException::withMessages(['email' => ['Kredensial yang diberikan tidak cocok dengan catatan kami.']]);
-        }
-        $token = $user->createToken('admin_token', ['admin'])->plainTextToken;
-        return response()->json(['user' => $user, 'token' => $token]);
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return redirect()->route('admin.login');
     }
 }
