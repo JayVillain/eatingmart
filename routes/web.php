@@ -3,8 +3,13 @@
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\MenuController;
 use App\Http\Controllers\Admin\OrderController;
-use App\Http\Controllers\Admin\AdminController; // Tambahkan ini
+use App\Http\Controllers\Admin\AdminController;
 use Illuminate\Support\Facades\Route;
+
+// Redirect dari halaman utama ke halaman login admin
+Route::get('/', function () {
+    return redirect()->route('admin.login');
+});
 
 // Rute Login Admin
 Route::get('/admin/login', [AuthController::class, 'showLoginForm'])->name('admin.login');
@@ -19,7 +24,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // Rute API (AJAX) untuk manajemen menu
     Route::get('/menus/list', [MenuController::class, 'list'])->name('menus.list');
     Route::post('/menus', [MenuController::class, 'store'])->name('menus.store');
-    Route::post('/menus/{menu}/update', [MenuController::class, 'update'])->name('menus.update'); // Menggunakan POST untuk PUT/PATCH
+    Route::put('/menus/{menu}', [MenuController::class, 'update'])->name('menus.update');
     Route::delete('/menus/{menu}', [MenuController::class, 'destroy'])->name('menus.destroy');
     
     // Rute API (AJAX) untuk manajemen pesanan
