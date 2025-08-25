@@ -17,7 +17,10 @@ class MenuFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'name' => fake()->word() . ' ' . fake()->foodName(),
+            'description' => fake()->sentence(8),
+            'price' => fake()->randomFloat(2, 5000, 100000),
+            'image_url' => 'https://via.placeholder.com/300x200.png?text=' . str_replace(' ', '+', fake()->word()),
         ];
     }
 }
