@@ -256,7 +256,6 @@
         document.getElementById('menu-modal').style.display = 'flex';
     });
 
-    // FUNGSI BARU UNTUK EDIT MENU
     async function editMenu(id) {
         try {
             const response = await fetch(`/admin/menus/list/${id}`);
@@ -273,7 +272,6 @@
         }
     }
 
-    // FUNGSI UNTUK SUBMIT FORM (TAMBAH & EDIT)
     document.getElementById('menu-form').addEventListener('submit', async (e) => {
         e.preventDefault();
         const id = document.getElementById('menu-id').value;
@@ -282,16 +280,12 @@
         let url = id ? `/admin/menus/${id}` : '/admin/menus';
         let method = id ? 'PUT' : 'POST';
 
-        // Khusus untuk PUT, kita tidak bisa langsung menggunakan FormData dengan fetch.
-        // Solusi yang lebih bersih adalah mengirimkan JSON atau menggunakan metode _method
-        // Saya akan menggunakan metode _method seperti di form
-        
         if (id) {
             formData.append('_method', 'PUT');
         }
 
         const response = await fetch(url, {
-            method: 'POST', // Gunakan POST dan tambahkan _method=PUT
+            method: 'POST',
             headers: {'X-CSRF-TOKEN': token},
             body: formData
         });
@@ -312,6 +306,13 @@
             headers: {'X-CSRF-TOKEN': token}
         });
         if (response.ok) fetchMenus();
+    }
+
+    window.onclick = function(event) {
+        const modal = document.getElementById('menu-modal');
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
     }
 
     fetchMenus();
