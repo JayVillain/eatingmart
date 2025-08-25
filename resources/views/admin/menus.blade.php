@@ -10,7 +10,7 @@
             --bg-color: #0c0d10;
             --card-bg: #1a1c20;
             --text-color: #e0e0e0;
-            --accent-color: #B29B7F; /* Aksen Emas Lembut */
+            --accent-color: #B29B7F;
             --border-color: rgba(255, 255, 255, 0.05);
             --input-bg: #2b2e33;
             --hover-color: #444;
@@ -96,7 +96,7 @@
         }
         
         .btn-edit {
-            background-color: #2a6096; /* Warna biru untuk edit */
+            background-color: #2a6096;
             color: #fff;
         }
         
@@ -232,7 +232,6 @@
     <script>
     const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     
-    // Fungsi untuk mengambil data menu dari API
     async function fetchMenus() {
         const response = await fetch('/admin/menus/list');
         const menus = await response.json();
@@ -251,28 +250,48 @@
         });
     }
 
-    // Menangani klik tombol "Tambah Menu"
     document.getElementById('add-menu-btn').addEventListener('click', () => {
         document.getElementById('menu-id').value = '';
         document.getElementById('menu-form').reset();
         document.getElementById('menu-modal').style.display = 'flex';
     });
 
-    // Menangani pengiriman formulir
+    // FUNGSI BARU UNTUK EDIT MENU
+    async function editMenu(id) {
+        try {
+            const response = await fetch(`/admin/menus/list/${id}`);
+            const menu = await response.json();
+            
+            document.getElementById('menu-id').value = menu.id;
+            document.getElementById('menu-name').value = menu.name;
+            document.getElementById('menu-description').value = menu.description;
+            document.getElementById('menu-price').value = menu.price;
+            document.getElementById('menu-modal').style.display = 'flex';
+        } catch (error) {
+            console.error('Error fetching menu for edit:', error);
+            alert('Gagal mengambil data menu. Periksa konsol.');
+        }
+    }
+
+    // FUNGSI UNTUK SUBMIT FORM (TAMBAH & EDIT)
     document.getElementById('menu-form').addEventListener('submit', async (e) => {
         e.preventDefault();
         const id = document.getElementById('menu-id').value;
         const formData = new FormData(e.target);
         
         let url = id ? `/admin/menus/${id}` : '/admin/menus';
-        let method = 'POST';
+        let method = id ? 'PUT' : 'POST';
 
+        // Khusus untuk PUT, kita tidak bisa langsung menggunakan FormData dengan fetch.
+        // Solusi yang lebih bersih adalah mengirimkan JSON atau menggunakan metode _method
+        // Saya akan menggunakan metode _method seperti di form
+        
         if (id) {
             formData.append('_method', 'PUT');
         }
 
         const response = await fetch(url, {
-            method: method,
+            method: 'POST', // Gunakan POST dan tambahkan _method=PUT
             headers: {'X-CSRF-TOKEN': token},
             body: formData
         });
@@ -281,45 +300,18 @@
             document.getElementById('menu-modal').style.display = 'none';
             fetchMenus();
         } else {
-            alert('Gagal menyimpan menu. Silakan coba lagi.');
+            const error = await response.json();
+            alert('Gagal menyimpan. ' + error.message);
         }
     });
 
-    // Fungsi untuk mengedit menu
-    async function editMenu(id) {
-        const response = await fetch(`/admin/menus/${id}/edit`);
-        const menu = await response.json();
-        
-        document.getElementById('menu-id').value = menu.id;
-        document.getElementById('menu-name').value = menu.name;
-        document.getElementById('menu-description').value = menu.description;
-        document.getElementById('menu-price').value = menu.price;
-
-        document.getElementById('menu-modal').style.display = 'flex';
-    }
-
-    // Fungsi untuk menghapus menu
     async function deleteMenu(id) {
-        if (!confirm('Yakin ingin menghapus menu ini?')) return;
-        
+        if (!confirm('Yakin ingin menghapus?')) return;
         const response = await fetch(`/admin/menus/${id}`, {
             method: 'DELETE',
             headers: {'X-CSRF-TOKEN': token}
         });
-        
-        if (response.ok) {
-            fetchMenus();
-        } else {
-            alert('Gagal menghapus menu.');
-        }
-    }
-
-    // Menutup modal saat mengklik di luar area konten
-    window.onclick = function(event) {
-        const modal = document.getElementById('menu-modal');
-        if (event.target == modal) {
-            modal.style.display = "none";
-        }
+        if (response.ok) fetchMenus();
     }
 
     fetchMenus();
