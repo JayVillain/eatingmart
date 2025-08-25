@@ -6,16 +6,16 @@
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
 
         :root {
-            --bg-color: #0c0d10;
-            --card-bg: #1a1c20;
-            --text-color: #e0e0e0;
-            --input-bg: #2b2e33;
-            --input-border: #444;
+            --bg-color: #f0f2f5; /* Latar belakang abu-abu terang */
+            --card-bg: #ffffff; /* Latar belakang kartu putih */
+            --text-color: #333333; /* Warna teks utama gelap */
+            --input-bg: #f5f5f5; /* Latar belakang input abu-abu sangat terang */
+            --input-border: #dddddd; /* Warna border input */
             --placeholder-color: #999;
-            --accent-color: #B29B7F; /* Aksen Emas Lembut */
-            --error-color: #ff6b6b;
+            --accent-color: #007bff; /* Warna aksen biru, umum untuk profesional */
+            --error-color: #dc3545; /* Merah untuk pesan error */
             --font-family: 'Roboto', sans-serif;
-            --shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
         body {
@@ -29,7 +29,6 @@
             margin: 0;
             padding: 20px;
             box-sizing: border-box;
-            background-image: radial-gradient(circle, rgba(26,28,32,0.8), rgba(12,13,16,1) 80%);
         }
 
         .login-container {
@@ -40,7 +39,7 @@
             border-radius: 12px;
             box-shadow: var(--shadow);
             text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--input-border);
         }
 
         .login-container h1 {
@@ -53,7 +52,7 @@
 
         .login-container p {
             font-size: 1rem;
-            color: #888;
+            color: #6c757d;
             margin-bottom: 30px;
         }
 
@@ -82,25 +81,25 @@
         .form-control:focus {
             border-color: var(--accent-color);
             outline: none;
-            box-shadow: 0 0 0 3px rgba(178, 155, 127, 0.3);
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
         }
 
         .error-message {
-            background-color: rgba(255, 107, 107, 0.1);
+            background-color: rgba(220, 53, 69, 0.1);
             color: var(--error-color);
             padding: 12px;
             border-radius: 8px;
             margin-bottom: 20px;
             font-size: 0.9rem;
             text-align: left;
-            border: 1px solid rgba(255, 107, 107, 0.2);
+            border: 1px solid rgba(220, 53, 69, 0.2);
         }
 
         .btn-submit {
             width: 100%;
             padding: 16px;
             background-color: var(--accent-color);
-            color: #1a1c20;
+            color: #ffffff;
             border: none;
             border-radius: 8px;
             font-size: 1.1rem;
@@ -110,9 +109,9 @@
         }
 
         .btn-submit:hover {
-            background-color: #a08c6f;
+            background-color: #0056b3;
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
         .btn-submit:active {
@@ -126,21 +125,17 @@
         <p>Sign in to continue to your dashboard.</p>
         <form method="POST" action="{{ route('admin.login') }}">
             @csrf
-
             @if ($errors->any())
                 <div class="error-message">
                     {{ $errors->first() }}
                 </div>
             @endif
-
             <div class="form-group">
                 <input type="email" class="form-control" name="email" required placeholder="Email Address">
             </div>
-
             <div class="form-group">
                 <input type="password" class="form-control" name="password" required placeholder="Password">
             </div>
-            
             <button type="submit" class="btn-submit">Login</button>
         </form>
     </div>
