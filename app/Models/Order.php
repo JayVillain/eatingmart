@@ -11,23 +11,23 @@ class Order extends Model
 
     protected $fillable = [
         'user_id',
+        'virtual_account_number',
         'total_price',
         'status',
-        'virtual_account_number',
     ];
 
-    /**
-     * Get the user that owns the order.
-     */
+    protected $casts = [
+        'total_price' => 'decimal:2',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime'
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    /**
-     * Get the items for the order.
-     */
-    public function items()
+    public function items() // Perbaikan nama relasi dari 'orderItems' ke 'items'
     {
         return $this->hasMany(OrderItem::class);
     }

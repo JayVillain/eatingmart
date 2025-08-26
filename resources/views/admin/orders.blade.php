@@ -10,13 +10,13 @@
             --bg-color: #0c0d10;
             --card-bg: #1a1c20;
             --text-color: #e0e0e0;
-            --accent-color: #B29B7F; /* Aksen Emas Lembut */
+            --accent-color: #B29B7F;
             --border-color: rgba(255, 255, 255, 0.05);
             --input-bg: #2b2e33;
             --hover-color: #444;
             --btn-primary-bg: #B29B7F;
             --btn-primary-text: #1a1c20;
-            --btn-status-bg-pending: #a08c6f; /* Aksen emas untuk status pending */
+            --btn-status-bg-pending: #a08c6f;
             --btn-status-hover: #b29b7f;
             --font-family: 'Roboto', sans-serif;
             --shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
@@ -105,13 +105,13 @@
             text-transform: uppercase;
         }
         
-        .status-badge.pending {
+        .status-badge.pending_payment {
             background-color: #b29b7f;
             color: #1a1c20;
         }
         
         .status-badge.paid {
-            background-color: #4CAF50; /* Hijau untuk status 'paid' */
+            background-color: #4CAF50;
             color: #fff;
         }
 
@@ -149,11 +149,14 @@
             <thead>
                 <tr>
                     <th>ID Pesanan</th>
+                    <th>Nama Pelanggan</th>
+                    <th>VA Number</th>
+                    <th>Total Harga</th>
                     <th>Status</th>
                     <th>Aksi</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="orders-table-body">
                 </tbody>
         </table>
     </div>
@@ -162,23 +165,32 @@
     const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     
     async function fetchOrders() {
-        const response = await fetch('/admin/orders/list');
-        const orders = await response.json();
-        const tbody = document.querySelector('#orders-table tbody');
-        tbody.innerHTML = '';
-        orders.forEach(order => {
-            const statusClass = order.status === 'pending' ? 'pending' : 'paid';
-            const statusText = order.status === 'pending' ? 'Menunggu Pembayaran' : 'Sudah Dibayar';
+        try {
+            const response = await fetch('/admin/orders/list');
+            const result = await response.json();
+            const orders = result.data;
 
-            const row = `<tr>
-                <td>${order.id}</td>
-                <td><span class="status-badge ${statusClass}">${statusText}</span></td>
-                <td>
-                    ${order.status === 'pending' ? `<button onclick="updateStatus(${order.id}, 'paid')" class="btn-action btn-pay">Tandai Sudah Dibayar</button>` : ''}
-                </td>
-            </tr>`;
-            tbody.innerHTML += row;
-        });
+            const tableBody = document.getElementById('orders-table-body');
+            tableBody.innerHTML = '';
+
+            orders.forEach(order => {
+                const statusClass = order.status;
+                const row = `<tr>
+                    <td>${order.id}</td>
+                    <td>${order.user.name}</td>
+                    <td>${order.virtual_account_number}</td>
+                    <td>Rp${order.total_price.toLocaleString('id-ID')}</td>
+                    <td><span class="status-badge ${statusClass}">${order.status.replace('_', ' ').toUpperCase()}</span></td>
+                    <td>
+                        ${order.status === 'pending_payment' ? `<button onclick="updateStatus(${order.id}, 'paid')" class="btn-action btn-pay">Tandai Sudah Dibayar</button>` : ''}
+                    </td>
+                </tr>`;
+                tableBody.innerHTML += row;
+            });
+        } catch (error) {
+            console.error('Error fetching orders:', error);
+            alert('Gagal memuat daftar pesanan. Cek konsol browser Anda.');
+        }
     }
 
     async function updateStatus(id, status) {
@@ -195,7 +207,7 @@
         }
     }
     
-    fetchOrders();
+    document.addEventListener('DOMContentLoaded', fetchOrders);
     </script>
 </body>
 </html>

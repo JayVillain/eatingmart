@@ -6,14 +6,17 @@ use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\AdminController;
 use Illuminate\Support\Facades\Route;
 
-// Redirect dari halaman utama ke halaman login admin
+// Halaman utama - jangan redirect ke admin login
 Route::get('/', function () {
-    return redirect()->route('admin.login');
+    return response()->json([
+        'message' => 'API Restaurant is running',
+        'status' => 'success'
+    ]);
 });
 
 // Rute Login Admin
 Route::get('/admin/login', [AuthController::class, 'showLoginForm'])->name('admin.login');
-Route::post('/admin/login', [AuthController::class, 'login']);
+Route::post('/admin/login', [AuthController::class, 'webLogin']);
 
 // Rute yang dilindungi oleh middleware 'auth' dan 'admin'
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
@@ -23,6 +26,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     
     // Rute API (AJAX) untuk manajemen menu
     Route::get('/menus/list', [MenuController::class, 'list'])->name('menus.list');
+    Route::get('/menus/{menu}', [MenuController::class, 'show'])->name('menus.show');
     Route::post('/menus', [MenuController::class, 'store'])->name('menus.store');
     Route::put('/menus/{menu}', [MenuController::class, 'update'])->name('menus.update');
     Route::delete('/menus/{menu}', [MenuController::class, 'destroy'])->name('menus.destroy');
