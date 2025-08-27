@@ -21,6 +21,6 @@ class DatabaseSeeder extends Seeder
         User::factory(10)->create();
 
         // Buat 20 menu item menggunakan factory
-        Menu::factory(20)->create();
+        Menu::factory(5)->create();
     }
 }
