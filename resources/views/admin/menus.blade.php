@@ -256,9 +256,10 @@
         document.getElementById('menu-modal').style.display = 'flex';
     });
 
+    // --- PERBAIKAN DI SINI ---
     async function editMenu(id) {
         try {
-            const response = await fetch(`/admin/menus/list/${id}`);
+            const response = await fetch(`/admin/menus/${id}`);
             const menu = await response.json();
             
             document.getElementById('menu-id').value = menu.id;
@@ -271,6 +272,7 @@
             alert('Gagal mengambil data menu. Periksa konsol.');
         }
     }
+    // --- AKHIR PERBAIKAN ---
 
     document.getElementById('menu-form').addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -308,14 +310,7 @@
         if (response.ok) fetchMenus();
     }
 
-    window.onclick = function(event) {
-        const modal = document.getElementById('menu-modal');
-        if (event.target == modal) {
-            modal.style.display = "none";
-        }
-    }
-
-    fetchMenus();
+    document.addEventListener('DOMContentLoaded', fetchMenus);
     </script>
 </body>
 </html>
