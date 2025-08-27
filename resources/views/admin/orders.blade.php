@@ -1,101 +1,161 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Manajemen Pesanan</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manajemen Pesanan - Admin Panel</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
         :root {
-            --bg-color: #0c0d10;
-            --card-bg: #1a1c20;
-            --text-color: #e0e0e0;
-            --accent-color: #B29B7F;
-            --border-color: rgba(255, 255, 255, 0.05);
-            --input-bg: #2b2e33;
-            --hover-color: #444;
-            --btn-primary-bg: #B29B7F;
-            --btn-primary-text: #1a1c20;
-            --btn-status-bg-pending: #a08c6f;
-            --btn-status-hover: #b29b7f;
-            --font-family: 'Roboto', sans-serif;
-            --shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+            --bg-color: #f5f7f9;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --primary-color: #5a5f7d;
+            --accent-color: #dc3545;
+            --hover-color: #e9ecef;
+            --border-color: #e0e0e0;
+            --shadow-light: 0 4px 6px rgba(0, 0, 0, 0.05);
+            --shadow-medium: 0 10px 15px rgba(0, 0, 0, 0.1);
+            --button-text-color: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         body {
-            font-family: var(--font-family);
+            font-family: 'Poppins', sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
-            margin: 0;
-            padding: 40px;
-            box-sizing: border-box;
+            line-height: 1.6;
         }
 
-        .container {
-            max-width: 1200px;
-            margin: auto;
+        .main-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
             background-color: var(--card-bg);
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: var(--shadow);
+            box-shadow: var(--shadow-light);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
         }
 
-        .header {
+        .logo {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item a, .nav-item button {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 500;
+            border-radius: 8px;
+            transition: background-color 0.3s, color 0.3s;
+            background: none;
+            border: none;
+            width: 100%;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .nav-item a:hover,
+        .nav-item button:hover,
+        .nav-item a.active {
+            background-color: var(--accent-color);
+            color: var(--button-text-color);
+        }
+        
+        .nav-item i {
+            margin-right: 10px;
+        }
+
+        .content-area {
+            flex-grow: 1;
+            padding: 40px;
+        }
+
+        .page-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 30px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 20px;
         }
 
-        .header h1 {
-            font-size: 2.5rem;
-            color: var(--accent-color);
-            margin: 0;
+        .page-header h1 {
+            font-size: 2rem;
+            color: var(--primary-color);
+            font-weight: 600;
         }
 
-        .header .nav-links {
-            display: flex;
-            gap: 20px;
-        }
-
-        .header .nav-links a {
-            text-decoration: none;
-            color: var(--text-color);
+        .action-button {
+            background-color: var(--accent-color);
+            color: var(--button-text-color);
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
             font-weight: 500;
-            transition: color 0.3s;
+            transition: background-color 0.3s;
         }
 
-        .header .nav-links a:hover {
-            color: var(--accent-color);
+        .action-button:hover {
+            background-color: #b02a37;
         }
 
-        /* Table Styling */
+        .data-table-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow-medium);
+            overflow: hidden;
+        }
+
         .data-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
         }
 
         .data-table th, .data-table td {
-            padding: 15px;
+            padding: 15px 20px;
             text-align: left;
             border-bottom: 1px solid var(--border-color);
         }
 
         .data-table th {
-            color: var(--accent-color);
-            font-weight: 500;
+            background-color: var(--hover-color);
+            color: var(--primary-color);
+            font-weight: 600;
             text-transform: uppercase;
             font-size: 0.9rem;
         }
-        
-        .data-table tbody tr:hover {
-            background-color: var(--input-bg);
+
+        .data-table tbody tr:last-child td {
+            border-bottom: none;
         }
-        
-        /* Status Badges */
+
+        .data-table tbody tr:hover {
+            background-color: var(--hover-color);
+        }
+
         .status-badge {
             display: inline-block;
             padding: 6px 12px;
@@ -106,59 +166,57 @@
         }
         
         .status-badge.pending_payment {
-            background-color: #b29b7f;
-            color: #1a1c20;
+            background-color: #ffc107;
+            color: #212529;
         }
         
         .status-badge.paid {
-            background-color: #4CAF50;
+            background-color: #28a745;
             color: #fff;
-        }
-
-        /* Action Button */
-        .btn-action {
-            font-size: 0.9rem;
-            padding: 8px 16px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        
-        .btn-pay {
-            background-color: #4CAF50;
-            color: #fff;
-        }
-        
-        .btn-pay:hover {
-            background-color: #66bb6a;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>Manajemen Pesanan</h1>
-            <div class="nav-links">
-                <a href="{{ route('admin.dashboard') }}">Dashboard</a>
-                <a href="{{ route('admin.menus.index') }}">Manajemen Menu</a>
+    <div class="main-container">
+        <aside class="sidebar">
+            <div class="logo">Admin Panel</div>
+            <ul class="nav-menu">
+                <li class="nav-item"><a href="{{ route('admin.dashboard') }}"><i class="fa fa-tachometer"></i> Dashboard</a></li>
+                <li class="nav-item"><a href="{{ route('admin.menus.index') }}"><i class="fa fa-cutlery"></i> Manajemen Menu</a></li>
+                <li class="nav-item"><a href="{{ route('admin.orders.index') }}" class="active"><i class="fa fa-shopping-cart"></i> Manajemen Pesanan</a></li>
+                <li class="nav-item">
+                    <form method="POST" action="{{ route('admin.logout') }}">
+                        @csrf
+                        <button type="submit" class="action-button" style="width: 100%; text-align: left; background: none; color: var(--text-color); padding: 12px 15px; font-weight: 500;">
+                            <i class="fa fa-sign-out"></i> Logout
+                        </button>
+                    </form>
+                </li>
+            </ul>
+        </aside>
+        
+        <div class="content-area">
+            <div class="page-header">
+                <h1>Manajemen Pesanan</h1>
+            </div>
+            
+            <div class="data-table-card">
+                <table id="orders-table" class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID Pesanan</th>
+                            <th>Nama Pelanggan</th>
+                            <th>VA Number</th>
+                            <th>Total Harga</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="orders-table-body">
+                    </tbody>
+                </table>
             </div>
         </div>
-
-        <table id="orders-table" class="data-table">
-            <thead>
-                <tr>
-                    <th>ID Pesanan</th>
-                    <th>Nama Pelanggan</th>
-                    <th>VA Number</th>
-                    <th>Total Harga</th>
-                    <th>Status</th>
-                    <th>Aksi</th>
-                </tr>
-            </thead>
-            <tbody id="orders-table-body">
-                </tbody>
-        </table>
     </div>
 
     <script>
@@ -169,10 +227,8 @@
             const response = await fetch('/admin/orders/list');
             const result = await response.json();
             const orders = result.data;
-
             const tableBody = document.getElementById('orders-table-body');
             tableBody.innerHTML = '';
-
             orders.forEach(order => {
                 const statusClass = order.status;
                 const row = `<tr>
@@ -189,7 +245,7 @@
             });
         } catch (error) {
             console.error('Error fetching orders:', error);
-            alert('Gagal memuat daftar pesanan. Cek konsol browser Anda.');
+            alert('Gagal memuat daftar pesanan. Periksa konsol browser Anda.');
         }
     }
 
