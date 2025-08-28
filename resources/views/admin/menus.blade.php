@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manajemen Menu - Admin Panel</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
@@ -457,21 +456,29 @@
         const formData = new FormData(e.target);
         
         let url = id ? `/admin/menus/${id}` : '/admin/menus';
-        
-        const response = await fetch(url, {
-            method: id ? 'PUT' : 'POST',
-            headers: {
-                'X-CSRF-TOKEN': token,
-            },
-            body: formData
-        });
+        let method = 'POST';
 
-        if (response.ok) {
-            closeModal();
-            fetchMenus();
-        } else {
-            const error = await response.json();
-            alert('Gagal menyimpan. ' + error.message);
+        if (id) {
+            formData.append('_method', 'PUT');
+        }
+
+        try {
+            const response = await fetch(url, {
+                method: method,
+                headers: {'X-CSRF-TOKEN': token},
+                body: formData
+            });
+
+            if (response.ok) {
+                closeModal();
+                fetchMenus();
+            } else {
+                const error = await response.json();
+                alert('Gagal menyimpan. ' + error.message);
+            }
+        } catch (error) {
+            console.error('Error saving menu:', error);
+            alert('Terjadi kesalahan saat menyimpan menu.');
         }
     });
 
